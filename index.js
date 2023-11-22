@@ -108,7 +108,7 @@ const jokeId = parseInt(req.params.id);
 const existingJoke = jokes.find((joke)=>joke.id === jokeId);
 const replaceJoke={
   id: jokeId,
-  jokeText:req.body.text || existingJoke.jokeText,
+  jokeText:req.body.text || existingJoke.jokeText,  // your can use if statement
   jokeType: req.body.type || existingJoke.jokeType,
 };
 
@@ -120,7 +120,37 @@ res.json(replaceJoke);
 
 //7. DELETE Specific joke
 
+app.delete('/jokes/:id', (req, res)=>{
+  const jokeId = parseInt(req.params.id);
+
+     // basic way to do it
+  // const deleteJoke = {
+  // };
+  const searchIndex = jokes.findIndex((joke)=> joke.id === jokeId);
+  // jokes[searchIndex]= deleteJoke;
+  // console.log(jokes[searchIndex]);
+  // res.sendStatus(200);
+//  ----------xxx------------  both will work same
+   if(searchIndex>-1){
+    jokes.splice(searchIndex, 1);
+    res.sendStatus(200);
+   } else{
+    res.status(404).json({error: `Joke with id ${jokeId} not found. No jokes were deleted`});
+   }
+
+});
+
 //8. DELETE All jokes
+
+app.delete('/all', (req,res)=>{
+  const id = req.query.key;
+  if(id===masterKey){
+    jokes=[];
+    res.sendStatus(200);
+  } else{
+    res.status(404).json({error: `Access forbidden, Key is required`});
+  }
+})
 
 app.listen(port, () => {
   console.log(`Successfully started server on port ${port}.`);
